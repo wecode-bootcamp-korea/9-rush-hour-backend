@@ -40,7 +40,7 @@ class SubCategory(models.Model):
 class Product(models.Model):
 
     """ Definition of Product Model """
-    product_no      = models.CharField(max_length = 50)
+    product_number  = models.CharField(max_length = 50)
     name            = models.CharField(max_length = 50)
     is_new          = models.BooleanField(default =False)
     is_vegan        = models.BooleanField(default =False)
@@ -98,8 +98,8 @@ class Weight(models.Model):
 class RelatedProduct(models.Model):
     
     """ Definition of RelatedProduct Model """
-    from_product    = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "from_product")
-    to_product      = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "to_product")
+    from_product    = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "to_product")
+    to_product      = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "from_product")
 
     class Meta:
         db_table    = "related_products"

@@ -5,11 +5,11 @@ class UserInfo(models.Model):
 
     """ Definition of User Model """
     user_id          = models.CharField(max_length = 50, null = True)
-    password         = models.CharField(max_length = 100)
+    password         = models.CharField(max_length = 200)
     nickname         = models.CharField(max_length = 50, null = True)
     email            = models.EmailField(max_length = 200)
     name             = models.CharField(max_length = 50)
-    phone_no         = models.CharField(max_length = 50)
+    phone_number     = models.CharField(max_length = 50)
     address          = models.CharField(max_length = 300)
     marketing_agreed = models.BooleanField(default = False)
     is_guest         = models.BooleanField(default = True)
