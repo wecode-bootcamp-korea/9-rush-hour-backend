@@ -48,7 +48,7 @@ class Shipping(models.Model):
     name            = models.CharField(max_length = 50)
     recipient       = models.CharField(max_length = 50)
     address         = models.CharField(max_length = 300)
-    user            = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "shpping_info")
+    user            = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "shipping_info")
 
     class Meta:
         db_table = "shippings"
