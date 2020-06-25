@@ -15,7 +15,6 @@ class UserInfo(models.Model):
     is_guest         = models.BooleanField(default = True)
     created_at       = models.DateTimeField(auto_now_add = True)
     updated_at       = models.DateTimeField(auto_now  = True)
-    #likes            = models.ManyToManyField("product.Product", through = "product.like", on_delete = models.SET_NULL, null = True, related_name = "liked_by_user")
 
     class Meta:
         db_table = "users"
