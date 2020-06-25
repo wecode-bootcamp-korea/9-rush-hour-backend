@@ -155,7 +155,7 @@ with open(CSV_PATH) as in_file:
                 )
 
         # Image
-        url = row[8].split
+        url = row[8]
         Image.objects.create(url = url, product = product)
 
         # Weight
@@ -188,7 +188,7 @@ with open(CSV_PATH) as in_file:
     # Payment
     payment_lists = ["신용카드","계좌이체","가상계좌","휴대폰결제","페이코"]
     for i in payment_lists:
-        Payment.objects.create(payment = i)
+        Payment.objects.create(name = i)
 
     # OrderStatus
     order_status_lists = [

@@ -5,7 +5,6 @@ class Review(models.Model):
     """ Definition of Review Model """
     stars        = models.IntegerField()
     date         = models.DateField(auto_now_add = True)
-    author       = models.CharField(max_length = 50)
     review       = models.TextField()
     user         = models.ForeignKey("user.Userinfo", on_delete = models.CASCADE, related_name = "wrote_review")
     product      = models.ForeignKey("product.Product", on_delete = models.CASCADE, related_name = "written_review")

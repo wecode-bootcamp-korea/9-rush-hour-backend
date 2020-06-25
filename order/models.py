@@ -11,7 +11,7 @@ class Order(models.Model):
     order_status    = models.ForeignKey("OrderStatus", on_delete = models.SET_NULL, null = True, related_name = "order_list")
     message         = models.TextField(blank = True)
     product         = models.ManyToManyField("product.Product", through = "OrderItem", related_name = "order")
-    shopping        = models.OneToOneField("shpping", on_delete = models.SET_NULL, null = True)
+    shipping        = models.OneToOneField("shipping", on_delete = models.SET_NULL, null = True)
 
     class Meta:
         db_table    = "orders"
@@ -42,7 +42,7 @@ class OrderStatus(models.Model):
     def __str__(self):
         return self.status
 
-class Shpping(models.Model):
+class Shipping(models.Model):
 
     """ Definition of Shpping Model """
     name            = models.CharField(max_length = 50)
@@ -59,10 +59,10 @@ class Shpping(models.Model):
 class Payment(models.Model):
 
     """ Definition of Payment Model """
-    payment         = models.CharField(max_length = 50)
+    name            = models.CharField(max_length = 50)
 
     class Meta:
-        db_table = "payments"
+        db_table    = "payments"
 
     def __str__(self):
         return self.payment

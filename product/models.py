@@ -45,12 +45,11 @@ class Product(models.Model):
     is_new          = models.BooleanField(default =False)
     is_vegan        = models.BooleanField(default =False)
     hash_tag        = models.CharField(max_length = 100)
-    price           = models.IntegerField()
+    price           = models.DecimalField(max_digits = 10, decimal_places = 2)
     stock           = models.IntegerField()
     sub_category    = models.ForeignKey("SubCategory", on_delete = models.SET_NULL, null = True, related_name = "product")
     detail          = models.OneToOneField("Detail", on_delete = models.CASCADE)
     related_products= models.ManyToManyField("self", through = "RelatedProduct", symmetrical = False)
-    #orders          = models.ManyToManyField("order.Order", through = "order.OrderItem", on_delete = models.SET_NULL, null = True, related_name = "order_product")
     likes           = models.ManyToManyField("user.UserInfo", through = "Like", related_name = "likes_product")
 
     class Meta:
@@ -87,7 +86,7 @@ class Weight(models.Model):
 
     """ Definition of Weight Model """
     weight_g        = models.IntegerField()
-    extra_price     = models.IntegerField()
+    extra_price     = models.DecimalField(max_digits = 10, decimal_places = 2)
     product         = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "weight")
 
     class Meta:
