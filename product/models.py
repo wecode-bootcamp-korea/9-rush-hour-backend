@@ -48,7 +48,7 @@ class Product(models.Model):
     price           = models.DecimalField(max_digits = 10, decimal_places = 2)
     stock           = models.IntegerField()
     sub_category    = models.ForeignKey("SubCategory", on_delete = models.SET_NULL, null = True, related_name = "product")
-    detail          = models.OneToOneField("Detail", on_delete = models.CASCADE)
+    detail          = models.OneToOneField("Detail", on_delete = models.SET_NULL, null = True)
     related_products= models.ManyToManyField("self", through = "RelatedProduct", symmetrical = False)
     likes           = models.ManyToManyField("user.UserInfo", through = "Like", related_name = "likes_product")
 

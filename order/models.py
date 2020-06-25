@@ -51,15 +51,15 @@ class Shipping(models.Model):
     user            = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "shpping_info")
 
     class Meta:
-        db_table = "shpping"
+        db_table = "shippings"
 
     def __str__(self):
-        return f"{self.recipient}_shpping_info"
+        return f"{self.recipient}_shipping_info"
 
 class Payment(models.Model):
 
     """ Definition of Payment Model """
-    name            = models.CharField(max_length = 50)
+    name    = models.CharField(max_length = 50)
 
     class Meta:
         db_table    = "payments"
