@@ -18,7 +18,7 @@ def login_decorator(func):
             request.user = valid_user
             return func(self,request)
     
-        else:
-            return JsonResponse({'message' : 'INVALID_USER'}, status = 400)
+        
+        return JsonResponse({'message' : 'INVALID_USER'}, status = 400)
 
     return wrapper
