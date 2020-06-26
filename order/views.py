@@ -7,12 +7,15 @@ from order.models   import *
 
 class OrderView(View):
     def post(self, request):
-        data=json.loads(request.body)
-        
         Order(
-             payment_info = Payment.name,
+             payment = Payment.name,
         ).save()
 
     def get(self, request):
         payment_info = Payment.objects.values()
-        return JsonResponse({'Payment Method': payment_info}, status=200)
+        Order_list = {}
+
+        Order_list{
+
+
+        #return JsonResponse({'Payment Method': payment_info}, status=200)
