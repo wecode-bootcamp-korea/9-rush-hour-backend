@@ -1,13 +1,11 @@
 import json
-import bcrypt
-import jwt
 
-from django.shortcuts   import render
 from django.http        import JsonResponse
 from django.views       import View
 
 from user.models        import UserInfo
 from lush.settings      import SECRET_KEY
+from lush.settings      import ALGORITHMS
 
 class LoginView(View):
     def post(self, request):
@@ -19,21 +17,14 @@ class LoginView(View):
                 user_password = user.password.encode('utf-8')
 
                 if bcrypt.checkpw(data['password'].encode('utf-8'),user_password):
-                    token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm = "HS256")
+                    token = jwt.encode({'id' : user.id}, SECRET_KEY, ALGORITHMS)
                     token = token.decode('utf-8')
-                    return JsonResponse({"Authorization" : token,'message':f'{user.nickname}님 로그인 성공!'}, status=200)     
+                    return JsonResponse({"Authorization" : token,'message':"LOGIN SUCCESS"}, status=200)     
                 else :
-                    return JsonResponse({"message":"비밀번호가 틀렸습니다 !"}, status = 401)
+                    return JsonResponse({"message":"WRONG PASSWORD"}, status = 401)
    
             else : 
-                return JsonResponse({"message":"아이디가 틀렸습니다!"}, status = 401)
+                return JsonResponse({"message":"WRONG ID"}, status = 401)
                 
         except KeyError as e:
             return JsonResponse({'message' : "INVALID_KEYS_".e},status =401)
-
-
-                
-
-
-
-# Create your views here.
