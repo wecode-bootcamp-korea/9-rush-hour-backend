@@ -2,13 +2,13 @@ import json
 import bcrypt
 import jwt
 
-from django.views import View
-from django.http import JsonResponse
+from django.views                            import View
+from django.http                             import JsonResponse
 from django.contrib.auth.password_validation import validate_password 
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from django.core.validators                  import validate_email
+from django.core.exceptions                  import ValidationError
 
-from user.models import UserInfo
+from user.models                             import UserInfo
 
 class SignUp(View):
     def post(self, request):
@@ -19,7 +19,6 @@ class SignUp(View):
 
             # if userid already exists in the db
             if UserInfo.objects.filter(user_id = data['user_id']).exists():
-                print('id passed')
                 return JsonResponse({'message' : 'USER_ID_ALREADY_EXISTS'},status=401)
             
             # validating the password
@@ -30,7 +29,6 @@ class SignUp(View):
                         
             # if nickname already exists in the db
             if UserInfo.objects.filter(nickname = data['nickname']).exists():
-                print('nickname passed')
                 return JsonResponse({'message': 'NICKNAME_ALREADY_EXISTS'},status=401) 
             
             # validating email address
@@ -41,19 +39,18 @@ class SignUp(View):
 
             # if email already exists in the db
             if UserInfo.objects.filter(email = data['email']).exists():
-                print('email_filter passed')
                 return JsonResponse({'message': 'EMAIL_ALREADY_EXISTS'})
                 
             # All necessary info validated, save into DB
             else:
                 UserInfo(
-                        user_id          =  data['user_id'],
-                        password         =  hashed_password.decode('utf-8'),
-                        nickname         =  data['nickname'],
-                        email            =  data['email'],
-                        name             =  data['name'],
-                        phone_number     =  data['phone_number'],
-                        address          =  data['address'],
+                        user_id          = data['user_id'],
+                        password         = hashed_password.decode('utf-8'),
+                        nickname         = data['nickname'],
+                        email            = data['email'],
+                        name             = data['name'],
+                        phone_number     = data['phone_number'],
+                        address          = data['address']
                 ).save()
                 return JsonResponse({'message': 'SUCCESS'}, status=200)
 
