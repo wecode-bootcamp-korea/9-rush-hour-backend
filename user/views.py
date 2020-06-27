@@ -42,17 +42,16 @@ class SignUp(View):
                 return JsonResponse({'message': 'EMAIL_ALREADY_EXISTS'})
                 
             # All necessary info validated, save into DB
-            else:
-                UserInfo(
-                        user_id          = data['user_id'],
-                        password         = hashed_password.decode('utf-8'),
-                        nickname         = data['nickname'],
-                        email            = data['email'],
-                        name             = data['name'],
-                        phone_number     = data['phone_number'],
-                        address          = data['address']
-                ).save()
-                return JsonResponse({'message': 'SUCCESS'}, status=200)
+            UserInfo(
+                    user_id          = data['user_id'],
+                    password         = hashed_password.decode('utf-8'),
+                    nickname         = data['nickname'],
+                    email            = data['email'],
+                    name             = data['name'],
+                    phone_number     = data['phone_number'],
+                    address          = data['address']
+            ).save()
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message': 'INVALID_KEY'}, status=401)
