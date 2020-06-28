@@ -10,7 +10,7 @@ from lush.settings  import ALGORITHMS
 
 def login_decorator(func):
     def wrapper(self, request):
-        access_token    = request.headers.get("Authorization")
+        access_token    = request.headers.get('Authorization')
         decoded_token   = jwt.decode(access_token, SECRET_KEY, ALGORITHMS)
 
         if UserInfo.objects.filter(user_id = decoded_token['id']).exists():
@@ -18,7 +18,6 @@ def login_decorator(func):
             request.user = valid_user
             return func(self,request)
     
-        
         return JsonResponse({'message' : 'INVALID_USER'}, status = 400)
 
     return wrapper

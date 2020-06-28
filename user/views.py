@@ -19,14 +19,12 @@ class LoginView(View):
                 user_password = user.password.encode('utf-8')
 
                 if bcrypt.checkpw(data['password'].encode('utf-8'),user_password):
-                    token = jwt.encode({'id' : user.id}, SECRET_KEY, ALGORITHMS)
-                    token = token.decode('utf-8')
-                    return JsonResponse({"Authorization" : token,'message':"LOGIN SUCCESS"}, status=200)     
+                    token = jwt.encode({'id' : user.id}, SECRET_KEY, ALGORITHMS).decode('utf-8')
+                    return JsonResponse({'Authorization' : token,'message':'LOGIN SUCCESS'}, status=200)     
                 
-                return JsonResponse({"message":"WRONG PASSWORD"}, status = 401)
+                return JsonResponse({'message':'WRONG PASSWORD'}, status = 401)
    
-             
-            return JsonResponse({"message":"WRONG ID"}, status = 401)
+            return JsonResponse({'message':'WRONG ID'}, status = 401)
                 
         except KeyError as e:
-            return JsonResponse({'message' : "INVALID_KEYS_".e},status =401)
+            return JsonResponse({'message' : 'INVALID_KEYS_'.e},status =401)
