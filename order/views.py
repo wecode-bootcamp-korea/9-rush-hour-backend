@@ -42,12 +42,11 @@ from product.models         import Product, Image
 #            cart.get().delete()
 #            return HttpResponse(status=200)
 
-
 class OrderView(View):
     @login_decorator
     def get(self, request):
         
-        # referencing the certain user
+        # bringing the certain user
         user = Order.objects.filter('user_info').all()
 
         # displaying user info
@@ -76,39 +75,29 @@ class OrderView(View):
 
     @login_decorator
     def post(self, request):
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        # checking the shipping method
-        
+            #  shipping method
+            
 
-        # saving product info to the DB
-        product_list = Order.objects.filter('product').all()
-        product_info = [{
-            "image"       : product.select_related('thumbnail_image').all().values(), 
-            "name"        : product.name,
-            "subcateogry" : product.product,
-            "price"       : product.price
-            } for product in product_list]
+            # product info
+            product_list = Order.objects.filter('product').all()
+            for product in product_list:
+                Order(
+                    product_id = product.product_number,
+                    amount = data['amount'],
+                ).save()
 
-        
+            # payment options
+            Payment(
+                payment_name = data["name"]
+            ).save()
 
+            # shipping message
+            Order(
+                message = data['message']
+            ).save()
 
-class PaymentView(View):
-    def post(self, request):
-        data = json.loads(request.body)
-
-        Payment(
-            payment_name = data["name"]
-        ).save()
-
-        return HttpResponse(status=200)
-
-class ShippingInfoView(View):
-    def post(self, request):
-        data = json.loads(request.body)
-        
-        Order(
-            message = data['message']
-        ).save()
-
-        return HttpResponse(status=200) 
+        except Order.DoesNotExist:
+            return JsonResponse({"message": "INVALID_ORDER"}, status = 400)

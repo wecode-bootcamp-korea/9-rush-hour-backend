@@ -65,4 +65,4 @@ class Payment(models.Model):
         db_table    = "payments"
 
     def __str__(self):
-        return self.payment
+        return self.name
