@@ -24,7 +24,3 @@ class ShippingManagementView(View):
     def get(self, request):
         shipping_list = Shipping.objects.values()
         return JsonResponse({'comments':list(shipping_list)}, status=200)
-
-
-
-
