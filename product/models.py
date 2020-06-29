@@ -118,3 +118,15 @@ class Like(models.Model):
 
     def __str__(self):
         return f"user_{self.user_id}_likes_{self.product_id}"
+
+class Spa(models.Model):
+    name    = models.CharField(max_length = 50)
+    hashtag = models.CharField(max_length = 100)
+    url     = models.URLField()
+    price   = models.DecimalField(max_digits = 10, decimal_places = 2)
+    menu    = models.ForeignKey("Menu", on_delete = models.CASCADE)
+
+class Store(models.Model):
+    name = models.CharField(max_length=50)
+    url  = models.URLField()
+    menu = models.ForeignKey("Menu", on_delete = models.CASCADE)
