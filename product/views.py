@@ -12,9 +12,9 @@ class ProductListView(View):
         page = int(request.GET.get("page",1))
         category_code = request.GET.get("category_code")
         
-        list_count = LIST_COUNT
-        limit = list_count * page
-        offset = limit - list_count
+        product_count = LIST_COUNT
+        limit = product_count * page
+        offset = limit - product_count
         all_products = Product.objects.all().prefetch_related(
                 "thumbnail_image"
                 ).select_related(
