@@ -1,15 +1,15 @@
+import json
+
 from django.http                    import HttpResponse, JsonResponse
 from django.views                   import View
 from django.db.models               import Count, F
 
-import json
-
 from .models          import Product, Category, SubCategory
 
-class ListView(View):
+class ProductListView(View):
     def get(self, request):
         page = int(request.GET.get("page",1))
-        category_code = request.GET.get("cateCd")
+        category_code = request.GET.get("category_code")
         
         list_count = 28
         limit = list_count * page
@@ -25,7 +25,7 @@ class ListView(View):
                 category_name = F("sub_category__category__name"),
                 category_code = F("sub_category__category__code"),
                 )
-        total_ctgry = rename_list.values(
+        total_category = rename_list.values(
                 "category_name",
                 "category_code"
                 ).annotate(
@@ -36,7 +36,7 @@ class ListView(View):
                 category_name = F("sub_category__name"),
                 category_code = F("sub_category__code")
                 )
-        total_sub_ctgry = rename_sub_list.values(
+        total_sub_category = rename_sub_list.values(
                 "category_name",
                 "category_code"
                 ).annotate(
@@ -55,8 +55,8 @@ class ListView(View):
                 product_info["price"]          = int(product.price)
                 product_info["stock"]          = product.stock
                 product_info["image"]          = product.thumbnail_image.all()[0].url
-                product_info["sub_ctgry_name"] = product.sub_category.name
-                product_info["sub_ctgry_code"] = product.sub_category.code
+                product_info["sub_category_name"] = product.sub_category.name
+                product_info["sub_category_code"] = product.sub_category.code
                 product_list.append(product_info)
             return product_list
 
@@ -72,23 +72,23 @@ class ListView(View):
                 return JsonResponse(
                         {
                             "product":product_list,
-                            "count":list(total_ctgry)+list(total_sub_ctgry)
+                            "count":list(total_category)+list(total_sub_category)
                             }, 
                         status=200
                         )
-            else :
-                # Sub_category 기준 리스트
-                sub_category_products = Product.objects.filter(
-                        sub_category__code = category_code
-                        )[offset:limit]
-                product_list = send_info(sub_category_products)
+            
+            # Sub_category 기준 리스트
+            sub_category_products = Product.objects.filter(
+                    sub_category__code = category_code
+                    )[offset:limit]
+            product_list = send_info(sub_category_products)
 
-                return JsonResponse(
-                        {
-                            "product":product_list,
-                            "count":list(total_ctgry)+list(total_sub_ctgry)
-                            },
-                        status = 200
-                        )
+            return JsonResponse(
+                    {
+                        "product":product_list,
+                        "count":list(total_category)+list(total_sub_category)
+                         },
+                    status = 200
+                    )
         except:
             return HttpResponse(status=400)

@@ -26,7 +26,7 @@ SECRET_KEY = lush_settings.SECRET["secret"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*","10.58.1.180","10.58.1.180:8000"] 
+ALLOWED_HOSTS = ["*"] 
 
 
 # Application definition
@@ -142,34 +142,3 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
-
-LOGGING = {
-    'disable_existing_loggers': False,
-    'version': 1,
-    'formatters': {
-         'verbose': {
-            'format': '{asctime} {levelname} {message}',
-            'style': '{'
-        },
-    },
-    'handlers': {
-        'console': {
-            'class'     : 'logging.StreamHandler',
-            'formatter' : 'verbose',
-            'level'     : 'DEBUG',
-        },
-        'file': {
-            'level'     : 'DEBUG',
-            'class'     : 'logging.FileHandler',
-            'formatter' : 'verbose',
-            'filename'  : 'debug.log',
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers' : ['console','file'],
-            'level'    : 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
