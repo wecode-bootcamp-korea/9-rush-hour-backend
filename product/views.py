@@ -6,10 +6,6 @@ import json
 
 from .models          import Product, Category, SubCategory
 
-
-
-
-
 class ListView(View):
     def get(self, request):
         page = int(request.GET.get("page",1))
