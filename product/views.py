@@ -4,14 +4,15 @@ from django.http                    import HttpResponse, JsonResponse
 from django.views                   import View
 from django.db.models               import Count, F
 
-from .models          import Product, Category, SubCategory
+from .models                        import Product, Category, SubCategory
+from lush_settings                  import LIST_COUNT
 
 class ProductListView(View):
     def get(self, request):
         page = int(request.GET.get("page",1))
         category_code = request.GET.get("category_code")
         
-        list_count = 28
+        list_count = LIST_COUNT
         limit = list_count * page
         offset = limit - list_count
         all_products = Product.objects.all().prefetch_related(
