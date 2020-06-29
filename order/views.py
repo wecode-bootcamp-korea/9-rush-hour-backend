@@ -1,16 +1,97 @@
 import json
 
-import django.views import View
-import django.http  import JsonResponse, HttpResponse
+import django.views         import View
+import django.http          import JsonResponse, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
-#from user.utils     import login_decorator
+from user.utils             import login_decorator
 
-from order.models   import (
-    Order,
-    Payment
-)
+from order.models           import * 
+from product.models         import Product, Image
 
-from product.models import Image
+#class CartView(View):
+#    @login_decorator
+#    def post(self, request, order_id):
+#        try:
+#            data = json.loads(request.body)
+#
+##            cart = OrderItem.objects.filter(order_id = request.order_id)
+##            order_item   = Order.objects.filter(user_info = request.user_info)   
+##            product = Product.objects.filter(product = request.product)
+##            order_product = Order.objects.filter(product = request.product)
+##            product_info = order_product.select_related('product_number')
+#
+#            #user_order = Order.objects.filter(user_info = request.user_info, order_no = data['order_no'])
+#            user_products = Order.objects.select_related('ordered').prefetch_related('product').all()
+#
+#            OrderItem(
+#                order = user_order.get(),
+#                product = data['product_number']
+#            ).save()
+#                        
+#            return HttpResponse(status = 200)
+#            
+#        except KeyError:
+#            return JsonResponse({'message': 'INVALID_KEY'}, status = 400)
+#
+#    def delete(self, request):
+#        @login_check
+#        cart = OrderItem.objects.filter(order = request.order)
+#
+#        if cart.exists():
+#            cart.get().delete()
+#            return HttpResponse(status=200)
+
+
+class OrderView(View):
+    @login_decorator
+    def get(self, request):
+        
+        # referencing the certain user
+        user = Order.objects.filter('user_info').all()
+
+        # displaying user info
+        user_info = {
+            "name"         : user.name,
+            "address"      : user.address,
+            "phone_number" : user.phone_number,
+            "email"        : user.email
+            }
+        
+        # shipping info - 기본 배송지
+       
+
+
+        # shipping info - 주문자정보와 동일
+        shipping_info = {
+            "recipient"    : user.name,
+            "address"      : user.address,
+            "phone_number" : user.phone_number,
+            }
+
+        return JsonResponse({
+            "user_info"     : list(user_info),
+            "shipping_info" : list(shipping_info),
+            }, status=200)
+
+    @login_decorator
+    def post(self, request):
+        data = json.loads(request.body)
+
+        # checking the shipping method
+        
+
+        # saving product info to the DB
+        product_list = Order.objects.filter('product').all()
+        product_info = [{
+            "image"       : product.select_related('thumbnail_image').all().values(), 
+            "name"        : product.name,
+            "subcateogry" : product.product,
+            "price"       : product.price
+            } for product in product_list]
+
+        
+
 
 class PaymentView(View):
     def post(self, request):
@@ -20,53 +101,14 @@ class PaymentView(View):
             payment_name = data["name"]
         ).save()
 
-        return JsonResponse({"payment method": list(Payment)}, status=200)
+        return HttpResponse(status=200)
 
-#    def get(self, request, payment_name):
-#        return JsonResponse({'Payment Method': Payment.objects.filter(name=payment_name)}, status=200)
-
-#class OrderStatusView(View):
-#    def get(self, request):
-#        return JsonResponse({'Order Status': OrderStatus.objects.filter(status=request.status), status=200)
-
-class UserInfoView(View):
-
-    #여기의 user_id는 어디서 오는가? 이 user_id는 유저 고유의 id?
-    def get(self, request, user_id):       
-
-         # 여기서 클래스의 related_name 사용?? or 그냥 user_info? 그리고 user_id가 같은 유저를 가져오는게 맞는지 not sure??
-        user_info_list = Order.objects.select_related('user_info').filter(user_id=user_id)         
-        user_info = [{
-            "name"         : user.name,
-            "address"      : user.address,
-            "phone_number" : user.phone_number,
-            "email"        : user.email
-            } for user in user_info_list]  # 유저 한명마다 리턴
-
-        return JsonResponse({"user_info": user_info}, status=200)
-
-class ProductView(View):
-    # 데코레이터 필요한가? 애초에 로그인을 안하면 장바구니로 못들어가서 probably not
-    def get(self, request):
-        product_list = Order.objects.prefetch_related('product')
-        product_info = [{
-            "image" : Image.url,  # 수정!!
-            "name" : product_list.name,
-            "subcateogry" : product_list.sub_category,
-            "price" : product_list.price
-            } for product in product_list]
-
-        return JsonResponse({"product_info" : product_info}, status=200})
-
-class ShippingView(View):
+class ShippingInfoView(View):
     def post(self, request):
         data = json.loads(request.body)
         
-        # shipping message
         Order(
             message = data['message']
         ).save()
-        return JsonResponse({"message" : list(Order)}, status=200) 
 
-    def get(self, request):
-
+        return HttpResponse(status=200) 
