@@ -35,19 +35,15 @@ def make_product_list(lists):
 class ProductListView(View):
     def get(self, request):
         try:
-            page = int(request.GET.get("page",1))
-            category_code = request.GET.get("category_code")
-            product_count = LIST_COUNT
-            limit = product_count * page
-            offset = limit - product_count
-            all_products = Product.objects.all().prefetch_related(
-                "thumbnail_image"
-            ).select_related(
-                "sub_category"
-            )[offset:limit]
+            page                = int(request.GET.get("page",1))
+            category_code       = request.GET.get("categoryCode")
+            sub_category_code   = request.GET.get("subCategoryCode")
+            product_count       = LIST_COUNT
+            limit               = product_count * page
+            offset              = limit - product_count
     
              # Category 기준 카운트
-            total_category = Product.objects.values(
+            total_category  = Product.objects.values(
                 "sub_category__category__name",
                 "sub_category__category__code",
             ).annotate(
@@ -71,7 +67,7 @@ class ProductListView(View):
                     "thumbnail_image"
                 ).select_related(
                     "sub_category"
-                )[offset:limit]
+                ).order_by("-is_new")[offset:limit]
                 product_list = make_product_list(all_products)
                 return JsonResponse(
                     {
@@ -82,12 +78,12 @@ class ProductListView(View):
                 )
                 
             # Sub_category 기준 리스트
-            elif Product.objects.filter(sub_category__code = category_code).exists():
+            if Product.objects.filter(sub_category__code = sub_category_code).exists():
                 sub_category_products = Product.objects.filter(
-                    sub_category__code = category_code
+                    sub_category__code = sub_category_code
                 )[offset:limit]
                 product_list = make_product_list(sub_category_products)
-        
+                       
                 return JsonResponse(
                     {
                         "product":product_list,
@@ -96,8 +92,8 @@ class ProductListView(View):
                     status = 200
                 )
 
-            else:
-                return JsonResponse({"message":"PRODUCT DOES NOT EXIST"}, status=404)
+            return JsonResponse({"message":"PRODUCT DOES NOT EXIST"}, status=404)
+        
         except KeyError as e:
             return JsonResponse({"message":f"{e} KEY ERROR"}, status = 400)
 
