@@ -1,4 +1,6 @@
 import json
+import uuid
+from datetime import datetime
 
 from django.views         import View
 from django.http          import JsonResponse, HttpResponse
@@ -9,49 +11,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from order.models           import * 
 from product.models         import * 
 
-#class CartView(View):
-#    @login_decorator
-#    def post(self, request, order_id):
-#        try:
-#            data = json.loads(request.body)
-#
-##            cart = OrderItem.objects.filter(order_id = request.order_id)
-##            order_item   = Order.objects.filter(user_info = request.user_info)   
-##            product = Product.objects.filter(product = request.product)
-##            order_product = Order.objects.filter(product = request.product)
-##            product_info = order_product.select_related('product_number')
-#
-#            #user_order = Order.objects.filter(user_info = request.user_info, order_no = data['order_no'])
-#            user_products = Order.objects.select_related('ordered').prefetch_related('product').all()
-#
-#            OrderItem(
-#                order = user_order.get(),
-#                product = data['product_number']
-#            ).save()
-#                        
-#            return HttpResponse(status = 200)
-#            
-#        except KeyError:
-#            return JsonResponse({'message': 'INVALID_KEY'}, status = 400)
-#
-#    def delete(self, request):
-#        @login_check
-#        cart = OrderItem.objects.filter(order = request.order)
-#
-#        if cart.exists():
-#            cart.get().delete()
-#            return HttpResponse(status=200)
-
 class OrderView(View):
     #@login_decorator
     def get(self, request):
         
-        # bringing the certain user
-        access_token = request.headers.get('Authorization')
-        decoded_token = jwt.decode(access_token, 'secret', algorithm='HS256')
-        user_id = decoded_token['id']
+        # bringing the user_id
+#        access_token = request.headers.get('Authorization')
+#        decoded_token = jwt.decode(access_token, 'secret', algorithm='HS256')
+#        decoded_user_id = decoded_token['id']
         
-        user = UserInfo.objects.get(id=user_id)
+        user = UserInfo.objects.get(id=request.body.get('user_id'))
 
         # displaying user info
         user_info = {
@@ -61,20 +30,29 @@ class OrderView(View):
             "email"        : user.email
             }
         
-        # shipping info - 기본 배송지
-       
+        # shipping info - default shipping address
+        shipping_method = request.body.get('shipping_method')
+        if shipping_method == 'default':
+            default_shipping = Shipping.objects.filter(basic=True).get(user_id=request.body.get('user_id'))
 
+            shipping_info = {
+                "recipient"    : default_shipping.recipient,
+                "address"      : default_shipping.address,
+                "phone_number" : default_shipping.phone_no
+                }
 
-        # shipping info - 주문자정보와 동일
-        shipping_info = {
-            "recipient"    : user.name,
-            "address"      : user.address,
-            "phone_number" : user.phone_number,
-            }
+        # shipping info - same as the user_info
+        elif shipping_method == 'same_user':
+            shipping_info = {
+                "recipient"    : user.name,
+                "address"      : user.address,
+                "phone_number" : user.phone_number,
+                }
 
         return JsonResponse({
-            "user_info"     : list(user_info),
-            "shipping_info" : list(shipping_info),
+            "user_info"       : list(user_info),
+            "shipping_info"   : list(shipping_info),
+            "payment_method"  : list(Payment.objects.values('name')), # payment method
             }, status=200)
 
     #@login_decorator
@@ -82,29 +60,27 @@ class OrderView(View):
         try:
             data = json.loads(request.body)
 
-            #  shipping method
-             
-
+            # bringing the user_id
+#            access_token = request.headers.get('Authorization')
+#            decoded_token = jwt.decode(access_token, 'secret', algorithm='HS256')
+#            user_id = decoded_token['id']
+            
             # product info
-            order = Order.objects.all()
-            product_list = order.product.name.all()
+            random_order_no = "lush_"+uuid.uuid4().hex+"_"+datetime.strftime(datetime.today(),"%Y%m%d") 
 
-            product_list = Order.objects.filter('product').all()
-            for product in product_list:
-                Order(
-                    product_id = product.product_number,
-                    amount = data['amount'],
-                ).save()
+            order = Order.objects.create(user_info_id=data['user_id'], order_no=random_order_no, price=data['total_price'], payment_id=data['payment_id'], order_status_id=1, shipping_id=1)
+            
+            product_id_list = request.body.get('product_number')
+            for i in product_id_list:
+                OrderItem.objects.create(order=order, product=Product.objects.get(product_number=i))
 
-            # payment options
-            Payment(
-                payment_name = data["name"]
-            ).save()
-
-            # shipping message
-            Order(
-                message = data['message']
-            ).save()
+            # shipping info - 직접입력
+            ShippingInfo(
+                name = data["name"],
+                address = data["address"],
+                phone_no = data["phone_no"],
+                message = data["message"]
+            ).save() 
 
         except Order.DoesNotExist:
             return JsonResponse({"message": "INVALID_ORDER"}, status = 400)
