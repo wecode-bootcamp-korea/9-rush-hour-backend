@@ -97,7 +97,6 @@ class ProductListView(View):
 class ProductDetailView(View):
     def get(self, request, product_id):
         detail_info = {}
-
         product_detail = Product.objects.filter(
                 product_number=product_id
                 ).prefetch_related(
@@ -107,18 +106,18 @@ class ProductDetailView(View):
                                 ).select_related(
                                         "detail"
                                     )
-        detail_info["product_name"] = product_detail.name
-        detail_info["hash_tag"]     = product_detail.hash_tag
-        detail_info["image"]        = product_detail.thumbnail_image.all()[0].url
-        detail_info["price"]        = int(product_detail.price)
-        detail_info["weight"]       = product_detail.weight.all()[0].weight_g
-        detail_info["extra_price"]  = int(product_detail.weight.all()[0].extra_price)
-        detail_info["video"]        = product_detail.detail.video_url
-        detail_info["html"]         = product_detail.detail.html
+        detail_info["product_name"] = product_detail[0].name 
+        detail_info["hash_tag"]     = product_detail[0].hash_tag
+        detail_info["image"]        = product_detail[0].thumbnail_image.all()[0].url
+        detail_info["price"]        = int(product_detail[0].price)
+        detail_info["weight"]       = product_detail[0].weight.all()[0].weight_g
+        detail_info["extra_price"]  = int(product_detail[0].weight.all()[0].extra_price)
+        detail_info["video"]        = product_detail[0].detail.video_url
+        detail_info["html"]         = product_detail[0].detail.html
         
         return JsonResponse(
                 {
-                    "detail":list(detail_info),
+                    "detail":[detail_info],
                     },
                 status=200
                 )
