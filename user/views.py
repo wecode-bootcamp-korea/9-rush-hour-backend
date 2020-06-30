@@ -9,8 +9,10 @@ from django.core.validators                  import validate_email
 from django.core.exceptions                  import ValidationError
 
 from user.models                             import UserInfo
-from lush.settings                           import SECRET_KEY
-from lush.settings                           import ALGORITHMS
+from lush.settings                           import (
+        SECRET_KEY,
+        ALGORITHMS
+        )
 
 class LoginView(View):
     def post(self, request):
