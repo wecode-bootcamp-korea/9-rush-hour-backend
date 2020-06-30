@@ -1,21 +1,21 @@
 import json
 
-from django.http                    import (
+from django.http        import (
     HttpResponse, 
     JsonResponse
 )
-from django.views                   import View
-from django.db.models               import (
+from django.views       import View
+from django.db.models   import (
     Count, 
     F
 )
 
-from .models                        import (
+from .models            import (
     Product, 
     Category, 
     SubCategory
 )
-from lush_settings                  import LIST_COUNT
+from lush_settings      import LIST_COUNT
 
 class ProductListView(View):
     def get(self, request):
@@ -71,7 +71,6 @@ class ProductListView(View):
                 product_list.append(product_info)
             return product_list
 
-        try :
             # Category 전체 기준 리스트
             if Category.objects.filter(code = category_code).exists():
                 all_products = Product.objects.all().prefetch_related(
@@ -101,5 +100,3 @@ class ProductListView(View):
                          },
                     status = 200
                     )
-        except:
-            return HttpResponse(status=400)
