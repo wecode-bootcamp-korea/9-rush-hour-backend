@@ -49,7 +49,7 @@ class Shipping(models.Model):
     recipient       = models.CharField(max_length = 50)
     phone_number    = models.CharField(max_length = 50)
     address         = models.CharField(max_length = 300)
-    user            = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "shipping_info")
+    user            = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "shipping_info", default = 1)
 
     class Meta:
         db_table = "shippings"
