@@ -1,32 +1,42 @@
 import json
 
-from django.http                    import HttpResponse, JsonResponse
+from django.http                    import (
+    HttpResponse, 
+    JsonResponse
+)
 from django.views                   import View
-from django.db.models               import Count, F
+from django.db.models               import (
+    Count, 
+    F
+)
 
-from .models                        import Product, Category, SubCategory
+from .models                        import (
+    Product, 
+    Category, 
+    SubCategory
+)
 from lush_settings                  import LIST_COUNT
 
 class ProductListView(View):
     def get(self, request):
-        page = int(request.GET.get("page",1))
-        category_code = request.GET.get("category_code")
+        page            = int(request.GET.get("page",1))
+        category_code   = request.GET.get("category_code")
         
-        product_count = LIST_COUNT
-        limit = product_count * page
-        offset = limit - product_count
-        all_products = Product.objects.all().prefetch_related(
+        product_count   = LIST_COUNT
+        limit           = product_count * page
+        offset          = limit - product_count
+        all_products    = Product.objects.all().prefetch_related(
                 "thumbnail_image"
                 ).select_related(
                         "sub_category"
                         )[offset:limit]
 
          # Category 기준 카운트
-        rename_list = Product.objects.annotate(
+        rename_list     = Product.objects.annotate(
                 category_name = F("sub_category__category__name"),
                 category_code = F("sub_category__category__code"),
                 )
-        total_category = rename_list.values(
+        total_category  = rename_list.values(
                 "category_name",
                 "category_code"
                 ).annotate(
