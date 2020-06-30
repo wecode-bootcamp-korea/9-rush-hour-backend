@@ -51,7 +51,7 @@ class ProductListView(View):
         # Sub_category 기준 카운트            
         total_sub_category = Product.objects.values(
             "sub_category__name",
-            "sub_categry__code",
+            "sub_category__code",
         ).annotate(
             category_name = F("sub_category__name"),
             category_code = F("sub_category__code"),
