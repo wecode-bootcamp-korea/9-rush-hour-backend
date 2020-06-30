@@ -34,7 +34,7 @@ class ShippingManagementView(View):
     
     def update(self,request):
         data = json.loads(request.body)
-        shipping_update = Shipping.objects.get(id = data['user_id'])
+        shipping_update = Shipping.objects.update???(id = data['user_id'])
         try:
             Shipping(
                     user_id      = data['user_id'],
@@ -42,7 +42,3 @@ class ShippingManagementView(View):
                     recipient    = data['recipient'],
                     address      = data['address'],
                     phone_number = data['phone_number']
-                    ). ()
-            return JsonResponse({'message':'SUCCESS UPDATE'}, status=200)
-        except KeyError:
-            return JsonResponse({'message': 'Invalid key.'})
