@@ -5,7 +5,7 @@ class Order(models.Model):
     """ Definition of Order Model """
     user_info       = models.ForeignKey("user.UserInfo", on_delete = models.CASCADE, related_name = "ordered")
     order_date      = models.DateTimeField(auto_now_add = True)
-    order_no        = models.CharField(max_length = 200)
+    order_number    = models.CharField(max_length = 200)
     amount          = models.IntegerField()
     payment         = models.ForeignKey("Payment", on_delete = models.SET_NULL, null = True)
     order_status    = models.ForeignKey("OrderStatus", on_delete = models.SET_NULL, null = True, related_name = "order_list")
@@ -17,7 +17,7 @@ class Order(models.Model):
         db_table    = "orders"
 
     def __str__(self):
-        return f"{user_info.user_id}_order"
+        return f"{self.user_info.user_id}_order"
 
 class OrderItem(models.Model):
 

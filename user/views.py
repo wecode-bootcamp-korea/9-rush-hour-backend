@@ -2,13 +2,37 @@ import json
 import bcrypt
 import jwt
 
-from django.views                            import View
 from django.http                             import JsonResponse
+from django.views                            import View
 from django.contrib.auth.password_validation import validate_password 
 from django.core.validators                  import validate_email
 from django.core.exceptions                  import ValidationError
 
 from user.models                             import UserInfo
+from lush.settings                           import (
+        SECRET_KEY,
+        ALGORITHMS
+        )
+
+class LoginView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try :
+            if UserInfo.objects.filter(user_id = data['user_id']).exists():
+                user = UserInfo.objects.get(user_id = data['user_id'])
+                user_password = user.password.encode('utf-8')
+
+                if bcrypt.checkpw(data['password'].encode('utf-8'),user_password):
+                    token = jwt.encode({'id' : user.id}, SECRET_KEY, ALGORITHMS).decode('utf-8')
+                    return JsonResponse({'Authorization' : token,'message':'LOGIN SUCCESS'}, status=200)     
+                
+                return JsonResponse({'message':'WRONG PASSWORD'}, status = 401)
+   
+            return JsonResponse({'message':'WRONG ID'}, status = 401)
+                
+        except KeyError as e:
+            return JsonResponse({'message' : 'INVALID_KEYS_'.e},status =401)
 
 class SignUp(View):
     def post(self, request):
