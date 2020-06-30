@@ -1,13 +1,13 @@
 import json
 
-import django.views         import View
-import django.http          import JsonResponse, HttpResponse
+from django.views         import View
+from django.http          import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from user.utils             import login_decorator
+#from user.utils             import login_decorator
 
 from order.models           import * 
-from product.models         import Product, Image
+from product.models         import * 
 
 #class CartView(View):
 #    @login_decorator
@@ -43,11 +43,15 @@ from product.models         import Product, Image
 #            return HttpResponse(status=200)
 
 class OrderView(View):
-    @login_decorator
+    #@login_decorator
     def get(self, request):
         
         # bringing the certain user
-        user = Order.objects.filter('user_info').all()
+        access_token = request.headers.get('Authorization')
+        decoded_token = jwt.decode(access_token, 'secret', algorithm='HS256')
+        user_id = decoded_token['id']
+        
+        user = UserInfo.objects.get(id=user_id)
 
         # displaying user info
         user_info = {
@@ -73,15 +77,18 @@ class OrderView(View):
             "shipping_info" : list(shipping_info),
             }, status=200)
 
-    @login_decorator
+    #@login_decorator
     def post(self, request):
         try:
             data = json.loads(request.body)
 
             #  shipping method
-            
+             
 
             # product info
+            order = Order.objects.all()
+            product_list = order.product.name.all()
+
             product_list = Order.objects.filter('product').all()
             for product in product_list:
                 Order(

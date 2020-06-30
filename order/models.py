@@ -16,8 +16,7 @@ class Order(models.Model):
     class Meta:
         db_table    = "orders"
 
-    def __str__(self):
-        return f"{user_info.user_id}_order"
+   
 
 class OrderItem(models.Model):
 
