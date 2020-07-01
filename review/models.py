@@ -18,7 +18,7 @@ class Review(models.Model):
 class ReviewImage(models.Model):
 
     """ Definition of ReviewImage Model """
-    url          = models.URLField()
+    image        = models.ImageField(upload_to="review/images", blank=True)
     review       = models.ForeignKey("Review", on_delete = models.CASCADE, related_name = "added_image")
 
     class Meta:
