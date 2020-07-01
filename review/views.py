@@ -3,16 +3,14 @@ import json
 from django.http    import JsonResponse
 from django.views   import View
 
-from .models        import (
-    Review,
-    ReviewImage
-)
+from .models        import Review
 from product.models import Product
 from user.models    import UserInfo
 from user.utils     import login_decorator
 
 class ProductCommentView(View):
     def get(self, request, product_id):
+        pass
         
 
     #@login_decorator

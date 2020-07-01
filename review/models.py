@@ -14,15 +14,3 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.product.name}_{self.user.user_id}_review"
-
-class ReviewImage(models.Model):
-
-    """ Definition of ReviewImage Model """
-    image        = models.ImageField(upload_to="review/images", blank=True)
-    review       = models.ForeignKey("Review", on_delete = models.CASCADE, related_name = "added_image")
-
-    class Meta:
-        db_table = "review_images"
-
-    def __str__(self):
-        return f"{self.review_id}_image"
