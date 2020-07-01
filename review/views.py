@@ -15,7 +15,7 @@ class ProductCommentView(View):
     def get(self, request, product_id):
         
 
-    @login_decorator
+    #@login_decorator
     def post(self, request, product_id):
         data = json.loads(request.body)
         Review.objects.create(
