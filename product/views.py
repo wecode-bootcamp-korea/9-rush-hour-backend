@@ -62,9 +62,9 @@ class ProductListView(View):
             ) 
             
             # Category or Sub_category filtering
-            if sub_category_code is None:
+            if category_code:
                 filters = {"sub_category__category__code":category_code}
-            if category_code is None:
+            if sub_category_code:
                 filters = {"sub_category__code":sub_category_code}
             if Product.objects.filter(**filters).exists():
                 all_products = Product.objects.prefetch_related(
@@ -100,11 +100,11 @@ class ProductDetailView(View):
                     "detail"
                 ).first()
 
-                related_products = [
-                    Product.objects.get(id=i) for i in [
-                        product.to_product_id for product in product_detail.to_product.all()
-                    ]
-                ]
+#                related_products = [
+#                    Product.objects.get(id=i) for i in [
+#                        product.to_product_id for product in product_detail.to_product.all()
+#                    ]
+#                ]
                 detail_info ={
                     "product_name"  : product_detail.name,
                     "hash_tag"      : product_detail.hash_tag,
@@ -114,7 +114,7 @@ class ProductDetailView(View):
                     "extra_price"   : int(product_detail.weight.first().extra_price),
                     "video"         : product_detail.detail.video_url,
                     "html"          : product_detail.detail.html,
-                    "related"       : make_product_list(related_products)
+                    "related"       : make_product_list([product.to_product for product in product_detail.to_product.all()])
                 }
                 
                 return JsonResponse(
