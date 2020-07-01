@@ -17,16 +17,16 @@ from lush_settings      import LIST_COUNT
 def make_product_list(lists):
     product_list = [
         {
-        "product_name"      :product.name,
-        "product_number"    :product.product_number,
-        "is_new"            :product.is_new,
-        "is_vegan"          :product.is_vegan,
-        "hash_tag"          :product.hash_tag,
-        "price"             :int(product.price),
-        "stock"             :product.stock,
-        "image"             :product.thumbnail_image.first().url,
-        "sub_category_name" :product.sub_category.name,
-        "sub_category_code" :product.sub_category.code
+        "product_name"      : product.name,
+        "product_number"    : product.product_number,
+        "is_new"            : product.is_new,
+        "is_vegan"          : product.is_vegan,
+        "hash_tag"          : product.hash_tag,
+        "price"             : int(product.price),
+        "stock"             : product.stock,
+        "image"             : product.thumbnail_image.first().url,
+        "sub_category_name" : product.sub_category.name,
+        "sub_category_code" : product.sub_category.code
         }
         for product in lists
     ]
@@ -63,10 +63,11 @@ class ProductListView(View):
             
             # Category or Sub_category filtering
             if sub_category_code is None:
-                filters = {"sub_category__category_code":category_code}
-            filters = {"sub_category__code":sub_category_code}
+                filters = {"sub_category__category__code":category_code}
+            if category_code is None:
+                filters = {"sub_category__code":sub_category_code}
             if Product.objects.filter(**filters).exists():
-                all_products = Product.objects.all().prefetch_related(
+                all_products = Product.objects.prefetch_related(
                     "thumbnail_image"
                 ).select_related(
                     "sub_category"
@@ -89,7 +90,6 @@ class ProductDetailView(View):
     def get(self, request, product_id):
         try:
             if Product.objects.filter(product_number = product_id).exists():
-                detail_info = {}
                 product_detail = Product.objects.filter(
                     product_number=product_id
                 ).prefetch_related(
@@ -99,21 +99,23 @@ class ProductDetailView(View):
                 ).select_related(
                     "detail"
                 ).first()
+
+                related_products = [
+                    Product.objects.get(id=i) for i in [
+                        product.to_product_id for product in product_detail.to_product.all()
+                    ]
+                ]
                 detail_info ={
-                    "product_name"  :product_detail.name,
-                    "hash_tag"      :product_detail.hash_tag,
-                    "image"         :product_detail.thumbnail_image.first().url,
-                    "price"         :int(product_detail.price),
-                    "weight"        :product_detail.weight.first().weight_g,
-                    "extra_price"   :int(product_detail.weight.first().extra_price),
-                    "video"         :product_detail.detail.video_url,
-                    "html"          :product_detail.detail.html,
+                    "product_name"  : product_detail.name,
+                    "hash_tag"      : product_detail.hash_tag,
+                    "image"         : product_detail.thumbnail_image.first().url,
+                    "price"         : int(product_detail.price),
+                    "weight"        : product_detail.weight.first().weight_g,
+                    "extra_price"   : int(product_detail.weight.first().extra_price),
+                    "video"         : product_detail.detail.video_url,
+                    "html"          : product_detail.detail.html,
+                    "related"       : make_product_list(related_products)
                 }
-                
-                # related_product 따로 추출
-                related_products_id         = [product.to_product_id for product in product_detail.to_product.all()]
-                related_products            = [Product.objects.get(id=i) for i in related_products_id]
-                detail_info["related"]      = make_product_list(related_products)
                 
                 return JsonResponse(
                     {
