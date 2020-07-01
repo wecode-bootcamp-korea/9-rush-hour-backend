@@ -99,14 +99,16 @@ class ProductDetailView(View):
                 ).select_related(
                     "detail"
                 ).first()
-                detail_info["product_name"] = product_detail.name 
-                detail_info["hash_tag"]     = product_detail.hash_tag
-                detail_info["image"]        = product_detail.thumbnail_image.first().url
-                detail_info["price"]        = int(product_detail.price)
-                detail_info["weight"]       = product_detail.weight.first().weight_g
-                detail_info["extra_price"]  = int(product_detail.weight.first().extra_price)
-                detail_info["video"]        = product_detail.detail.video_url
-                detail_info["html"]         = product_detail.detail.html
+                detail_info ={
+                    "product_name"  :product_detail.name,
+                    "hash_tag"      :product_detail.hash_tag,
+                    "image"         :product_detail.thumbnail_image.first().url,
+                    "price"         :int(product_detail.price),
+                    "weight"        :product_detail.weight.first().weight_g,
+                    "extra_price"   :int(product_detail.weight.first().extra_price),
+                    "video"         :product_detail.detail.video_url,
+                    "html"          :product_detail.detail.html,
+                }
                 
                 # related_product 따로 추출
                 related_products_id         = [product.to_product_id for product in product_detail.to_product.all()]
