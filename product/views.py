@@ -4,7 +4,7 @@ from django.http        import JsonResponse
 from django.views       import View
 from django.db.models   import (
     Count, 
-    F
+    F 
 )
 
 from .models            import (
@@ -61,35 +61,23 @@ class ProductListView(View):
                 total = Count("category_name")
             ) 
             
-            # Category 전체 기준 리스트
-            if Category.objects.filter(code = category_code).exists():
+            # Category or Sub_category filtering
+            if sub_category_code is None:
+                filters = {"sub_category__category_code":category_code}
+            filters = {"sub_category__code":sub_category_code}
+            if Product.objects.filter(**filters).exists():
                 all_products = Product.objects.all().prefetch_related(
                     "thumbnail_image"
                 ).select_related(
                     "sub_category"
-                ).order_by("-is_new")[offset:limit]
+                ).filter(**filters).order_by("-is_new")[offset:limit]
                 product_list = make_product_list(all_products)
                 return JsonResponse(
                     {
                         "product":product_list,
-                        "count":list(total_category)+list(total_sub_category)
-                    }, 
-                    status=200
-                )
-                
-            # Sub_category 기준 리스트
-            if Product.objects.filter(sub_category__code = sub_category_code).exists():
-                sub_category_products = Product.objects.filter(
-                    sub_category__code = sub_category_code
-                )[offset:limit]
-                product_list = make_product_list(sub_category_products)
-                       
-                return JsonResponse(
-                    {
-                        "product":product_list,
-                        "count":list(total_category)+list(total_sub_category)
+                        "count"  :list(total_category)+list(total_sub_category)
                     },
-                    status = 200
+                    status=200
                 )
 
             return JsonResponse({"message":"PRODUCT DOES NOT EXIST"}, status=404)
