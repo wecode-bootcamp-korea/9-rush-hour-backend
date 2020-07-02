@@ -24,6 +24,7 @@ class OrderItem(models.Model):
     """ Definition of OrderItem Model """
     order           = models.ForeignKey("Order", on_delete = models.CASCADE)
     product         = models.ForeignKey("product.Product", on_delete = models.CASCADE)
+    amount          = models.IntegerField()
 
     class Meta:
         db_table    = "order_items"
@@ -43,11 +44,14 @@ class OrderStatus(models.Model):
         return self.status
 
 class ShippingInfo(models.Model):
+
+    """ Definition of ShippingInfo Model """
     name            = models.CharField(max_length = 50)
     address         = models.CharField(max_length = 300)
     phone_no        = models.CharField(max_length = 100, null=True)
     message         = models.TextField()
     shipping_list   = models.OneToOneField('ShippingList', on_delete = models.SET_NULL, null=True) 
+
     class Meta:
         db_table    = "shipping_info"
 
