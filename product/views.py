@@ -10,7 +10,9 @@ from django.db.models   import (
 from .models            import (
     Product, 
     Category, 
-    SubCategory
+    SubCategory,
+    Spa,
+    Store
 )
 from lush_settings      import LIST_COUNT
         
@@ -127,3 +129,29 @@ class ProductDetailView(View):
         
         except KeyError as e:
             return JsonResponse({"message":f"{e} KEY ERROR"}, status = 400)
+
+class SpaView(View):
+    def get(self,request):
+        spa = Spa.objects.all()
+        spa_list = [
+                {
+                    'name'      : spa_info.name,
+                    'hashtag'   : spa_info.hashtag,
+                    'url'       : spa_info.url,
+                    'price'     : spa_info.price
+                } for spa_info in spa 
+            ]
+
+        return JsonResponse({"spa_list":spa_list})
+
+class StoreView(View):
+    def get(self,request):
+        store = Store.objects.all()
+        store_list = [
+                {
+                    'name'  : store_info.name,
+                    'url'   : store_info.url
+                } for store_info in store 
+            ]
+
+        return JsonResponse({"store_list":store_list})
