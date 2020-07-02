@@ -28,7 +28,6 @@ class ShippingManagementView(View):
         return JsonResponse({'comments':list(shipping_list)}, status=200)
 
     def delete(self, request, shipping_id):
-       # data            = json.loads(request.body)
         shipping_delete = Shipping.objects.get(id = shipping_id)
         shipping_delete.delete()
         return JsonResponse({'message':'DELETE SUCCESS'}, status=200)
