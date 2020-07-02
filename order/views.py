@@ -1,9 +1,10 @@
 import json
 
-from django.http    import JsonResponse
+from django.http    import JsonResponse,HttpResponse
 from django.views   import View
 
-from .models        import *
+from .models        import Shipping
+from user.utils     import login_decorator
 
 class ShippingManagementView(View):
     @login_decorator
@@ -17,25 +18,24 @@ class ShippingManagementView(View):
                     address         = data['address'],
                     phone_number    = data['phone_number']
                     ).save()
-            return JsonResponse({'message':'SUCCESS POST'}, status=200)
+            return HttpResponse(status=200)
 
-        except KeyError as e:
-            return JsonResponse({'message': 'Invalid key.'.e}, status = 401)
+        except KeyError :
+            return JsonResponse({'message': 'Invalid key.'}, status = 401)
 
     def get(self, request):
         shipping_list = Shipping.objects.values()
         return JsonResponse({'comments':list(shipping_list)}, status=200)
 
-    def delete(self, request):
-        data            = json.loads(request.body)
-        shipping_delete = Shipping.objects.get(id = data['id'])
+    def delete(self, request, shipping_id):
+       # data            = json.loads(request.body)
+        shipping_delete = Shipping.objects.get(id = shipping_id)
         shipping_delete.delete()
         return JsonResponse({'message':'DELETE SUCCESS'}, status=200)
     
-    def put(self,request):
+    def put(self, request, shipping_id):
         data            = json.loads(request.body)
-        name            = data['name']
-        shipping_update = Shipping.objects.get(id = data['id'])
+        shipping_update = Shipping.objects.get(id = shipping_id)
         try:
             shipping_update.name         = data['name']
             shipping_update.address      = data['address']
@@ -44,5 +44,5 @@ class ShippingManagementView(View):
             shipping_update.save()  
             return JsonResponse({'message':'SUCCESS UPDATE'}, status=200)
 
-        except KeyError as e:
-            return JsonResponse({'message': 'Invalid key.'.e}, status = 401)
+        except KeyError :
+            return JsonResponse({'message': 'Invalid key.'}, status = 400)
