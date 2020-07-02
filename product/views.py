@@ -100,11 +100,6 @@ class ProductDetailView(View):
                     "detail"
                 ).first()
 
-#                related_products = [
-#                    Product.objects.get(id=i) for i in [
-#                        product.to_product_id for product in product_detail.to_product.all()
-#                    ]
-#                ]
                 detail_info ={
                     "product_name"  : product_detail.name,
                     "hash_tag"      : product_detail.hash_tag,
