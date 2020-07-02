@@ -18,7 +18,7 @@ class ProductCommentView(View):
             {
                 "stars"     :review.stars,
                 "date"      :review.date,
-                "review"    :review.reivew,
+                "review"    :review.review,
                 "user"      :review.user.name,
                 "product"   :review.product.name
             }
@@ -26,7 +26,7 @@ class ProductCommentView(View):
         ]
         return JsonResponse({"review":review_list}, status=200)
 
-    #@login_decorator
+    @login_decorator
     def post(self, request, product_id):
         data = json.loads(request.body)
         Review.objects.create(
