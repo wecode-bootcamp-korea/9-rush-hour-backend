@@ -4,7 +4,10 @@ import jwt
 from datetime               import datetime
 
 from django.views           import View
-from django.http            import JsonResponse
+from django.http            import (
+    JsonResponse,
+    HttpResponse
+)
 from django.core.exceptions import ObjectDoesNotExist
 
 from user.utils             import login_decorator
@@ -23,7 +26,6 @@ from lush.settings          import (
     ALGORITHMS
 )
 
-""" 주문하기 눌렀을때 주문 in 디테일 & 장바구니 """
 class OrderView(View):
 
     @login_decorator
@@ -44,23 +46,20 @@ class OrderView(View):
                 amount  = data['amount']
             )
             
-            return JsonResponse({"message": "SUCCESSFULLY_SAVED"}, status = 200) 
+            return HttpResponse(status = 200) 
         
         except Product.DoesNotExist:
             return JsonResponse({"message": "PRODUCT_NOT_FOUND"}, status = 404) 
         
-""" 결제하기 눌렀을때 주문"""
 class PayView(View):
 
     @login_decorator
     def get(self, request):
         data = json.loads(request.body)
-
-        # bringing the user_id and user
+        
         user_id = data['user']
         user = UserInfo.objects.get(id=user_id)
 
-        # displaying user info
         user_info = {
             "name"         : user.name,
             "address"      : user.address,
@@ -134,7 +133,7 @@ class PayView(View):
             for i in product_id_list:
                 OrderItem.objects.create(order=order, product=Product.objects.get(product_number=i))
 
-            return JsonResponse({"message": "SUCCESSFULLY_SAVED"}, status = 200)
+            return HttpResponse(status = 200)
 
         except Order.DoesNotExist:
             return JsonResponse({"message": "ORDER_NOT_FOUND"}, status = 404)
