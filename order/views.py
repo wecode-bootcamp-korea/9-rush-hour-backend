@@ -10,27 +10,30 @@ class ShippingManagementView(View):
     @login_decorator
     def post(self, request):
         data = json.loads(request.body)
+        print(data)
         try:
             Shipping(
-                    user_id         = data['user_id'],
-                    name            = data['name'],
-                    recipient       = data['recipient'],
-                    address         = data['address'],
-                    phone_number    = data['phone_number']
+                        user_id         = data['user'],
+                        name            = data['name'],
+                        recipient       = data['recipient'],
+                        address         = data['address'],
+                        phone_number    = data['phone_number']
                     ).save()
             return HttpResponse(status=200)
 
         except KeyError :
-            return JsonResponse({'message': 'Invalid key.'}, status = 401)
-
+            return JsonResponse({'message': 'INVALID_KEY.'}, status = 401)
+    @login_decorator
     def get(self, request):
-        shipping_list = Shipping.objects.values()
-        return JsonResponse({'comments':list(shipping_list)}, status=200)
+        data          = json.loads(request.body)
+        user_id       = data['user']
+        shipping_list = Shipping.objects.filter(user_id = user_id).values()
+        return JsonResponse({'shipping':list(shipping_list)}, status=200)
 
     def delete(self, request, shipping_id):
         shipping_delete = Shipping.objects.get(id = shipping_id)
         shipping_delete.delete()
-        return JsonResponse({'message':'DELETE SUCCESS'}, status=200)
+        return JsonResponse({'message':'DELETE_SUCCESS'}, status=200)
     
     def put(self, request, shipping_id):
         data            = json.loads(request.body)
@@ -41,7 +44,7 @@ class ShippingManagementView(View):
             shipping_update.recipient    = data['recipient']
             shipping_update.phone_number = data['phone_number']
             shipping_update.save()  
-            return JsonResponse({'message':'SUCCESS UPDATE'}, status=200)
+            return JsonResponse({'message':'UPDATE_SUCCESS'}, status=200)
 
         except KeyError :
-            return JsonResponse({'message': 'Invalid key.'}, status = 400)
+            return JsonResponse({'message': 'INVALID_KEY.'}, status = 400)
