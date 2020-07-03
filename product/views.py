@@ -155,3 +155,4 @@ class StoreView(View):
             ]
 
         return JsonResponse({"store_list":store_list})
+
