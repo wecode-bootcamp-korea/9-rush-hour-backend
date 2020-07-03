@@ -130,10 +130,10 @@ class SpaView(View):
         spa = Spa.objects.all()
         spa_list = [
                 {
-                    'name'      : spa_info.name,
-                    'hashtag'   : spa_info.hashtag,
-                    'url'       : spa_info.url,
-                    'price'     : spa_info.price
+                    'product_name'      : spa_info.name,
+                    'hash_tag'   : spa_info.hashtag,
+                    'image'       : spa_info.url,
+                    'price'     : int(spa_info.price)
                 } for spa_info in spa 
             ]
 
