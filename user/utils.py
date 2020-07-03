@@ -13,8 +13,8 @@ def login_decorator(func):
         access_token    = request.headers.get('Authorization')
         decoded_token   = jwt.decode(access_token, SECRET_KEY, ALGORITHMS)
 
-        if UserInfo.objects.filter(user_id = decoded_token['id']).exists():
-            valid_user   = UserInfo.objects.get(user_id = decoded_token['id'])
+        if UserInfo.objects.filter(id = decoded_token['id']).exists():
+            valid_user   = UserInfo.objects.get(id = decoded_token['id'])
             request.user = valid_user
             return func(self,request)
     
