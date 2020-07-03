@@ -23,10 +23,11 @@ class ShippingManagementView(View):
 
         except KeyError :
             return JsonResponse({'message': 'INVALID_KEY.'}, status = 401)
+
     @login_decorator
     def get(self, request):
         data          = json.loads(request.body)
-        user_id       = data['user']
+        user_id       = request.user.id
         shipping_list = Shipping.objects.filter(user_id = user_id).values()
         return JsonResponse({'shipping':list(shipping_list)}, status=200)
 
